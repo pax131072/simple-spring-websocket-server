@@ -14,9 +14,7 @@ root/
 │
 ├── webserver/                  # Spring Boot backend
 │   ├── pom.xml
-│   ├── src/main/java/example/  # WebSocket logic
-│   └── src/main/resources/
-│       └── application.yml
+│   └── src/main/java/example/  # WebSocket logic
 │
 ├── LICENSE
 └── readme.md
