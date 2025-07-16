@@ -1,0 +1,88 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>WebSocket 測試頁面</title>
+    </head>
+    <body>
+    <h2>WebSocket 測試</h2>
+
+    <label>UUID: <input id="uuid" value="test123" /></label><br/>
+    <button onclick="connect()">建立連線</button>
+    <button onclick="disconnect()">中斷連線</button>
+
+    <hr>
+
+    <label>訊息內容: <input id="message" value="Hello Server" /></label><br/>
+    <button onclick="sendMessage()">送出訊息</button>
+    <button onclick="sendByApi()">用 API 傳送至指定 UUID</button>
+    <button onclick="forceClose()">用 API 中斷連線</button>
+
+    <pre id="log" style="border:1px solid #ccc; padding:10px; height:200px; overflow:auto;"></pre>
+
+    <script>
+        let socket = null;
+
+        function log(msg) {
+            const logArea = document.getElementById("log");
+            logArea.textContent += msg + "\n";
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        function connect() {
+            const uuid = document.getElementById("uuid").value;
+            if (!uuid) {
+                alert("請輸入 UUID");
+                return;
+            }
+            socket = new WebSocket("ws://localhost:8080/ws?uuid=" + encodeURIComponent(uuid));
+
+            socket.onopen = () => log("✅ 已建立連線");
+            socket.onmessage = e => log("📥 收到訊息: " + e.data);
+            socket.onclose = () => log("❌ 連線已關閉");
+            socket.onerror = e => log("⚠️ 連線錯誤: " + e.message || e);
+        }
+
+        function sendMessage() {
+            if (!socket || socket.readyState !== WebSocket.OPEN) {
+                alert("尚未連線");
+                return;
+            }
+            const msg = document.getElementById("message").value;
+            socket.send(msg);
+            log("📤 已發送: " + msg);
+        }
+
+        function disconnect() {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.close();
+            }
+        }
+
+        function sendByApi() {
+            const uuid = document.getElementById("uuid").value.trim();
+            const msg = document.getElementById("message").value;
+            if (!uuid) {
+                alert("請輸入 UUID");
+                return;
+            }
+            fetch("http://localhost:8080/ws-api/send", {
+                method: "POST", 
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ [uuid]: msg })
+            }).then(res => res.text()).then(log).catch(err => log("❌ 發送失敗: " + err));
+        }
+
+        function forceClose() {
+            const uuid = document.getElementById("uuid").value.trim();
+            if (!uuid) {
+                alert("請輸入 UUID");
+                return;
+            }
+            fetch("http://localhost:8080/ws-api/close?uuid=" + encodeURIComponent(uuid), {
+                method: "POST"
+            }).then(res => res.text()).then(log).catch(err => log("❌ 關閉失敗: " + err));
+        }
+    </script>
+    </body>
+    </html>

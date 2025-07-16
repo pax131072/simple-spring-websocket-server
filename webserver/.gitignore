@@ -1,0 +1,53 @@
+# Java compiled files
+*.class
+
+# Log files
+*.log
+
+# Package output
+/target/
+/build/
+
+# IDE settings (IntelliJ / Eclipse / VS Code)
+.idea/
+*.iml
+*.ipr
+*.iws
+*.class
+*.swp
+*.swo
+*.bak
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Environment / secrets
+.env
+*.secret
+application-local.yml
+application-local.properties
+
+# Maven Wrapper
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
+
+# Test reports
+/test-output/
+/surefire-reports/
+/jacoco.exec
+
+# Temporary
+*.tmp
+*.bak
+*.old
